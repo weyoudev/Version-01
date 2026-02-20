@@ -1,0 +1,29 @@
+# Dependencies and build output
+node_modules
+**/node_modules
+**/dist
+.git
+.gitignore
+*.md
+.env
+.env.*
+!.env.example
+
+# IDE and OS
+.idea
+.vscode
+*.log
+.DS_Store
+Thumbs.db
+
+# Test and dev
+**/*.spec.ts
+**/__tests__
+**/test
+coverage
+.nyc_output
+
+# Optional: exclude other apps if only building API (keeps context smaller)
+# apps/admin-web
+# apps/customer-mobile
+# apps/customer-web

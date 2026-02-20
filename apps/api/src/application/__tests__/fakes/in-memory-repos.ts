@@ -201,6 +201,7 @@ export function createFakeSubscriptionsRepo(
     usedKg: 0,
     usedItemsCount: 0,
     branchId: null,
+    addressId: (s as Partial<SubscriptionRecord>).addressId ?? null,
     totalMaxPickups: null,
     totalKgLimit: null,
     totalItemsLimit: null,
@@ -211,6 +212,7 @@ export function createFakeSubscriptionsRepo(
     id: sub.id,
     planId: sub.planId,
     planName: 'Test Plan',
+    addressId: sub.addressId ?? null,
     validityStartDate: sub.validityStartDate,
     validTill: sub.expiryDate,
     remainingPickups: sub.remainingPickups,
@@ -246,6 +248,9 @@ export function createFakeSubscriptionsRepo(
     async findActiveByUserIdAndPlanId(userId: string, planId: string): Promise<SubscriptionRecord | null> {
       return records.find((r) => r.userId === userId && r.planId === planId && r.active && r.expiryDate >= new Date() && r.remainingPickups > 0) ?? null;
     },
+    async hasEverRedeemedPlan(userId: string, planId: string): Promise<boolean> {
+      return records.some((r) => r.userId === userId && r.planId === planId);
+    },
     async countActive(): Promise<number> {
       return records.filter((r) => r.active).length;
     },
@@ -255,6 +260,7 @@ export function createFakeSubscriptionsRepo(
         userId: data.userId,
         planId: data.planId,
         branchId: data.branchId ?? null,
+        addressId: data.addressId ?? null,
         validityStartDate: data.validityStartDate,
         remainingPickups: data.remainingPickups,
         usedKg: 0,

@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { InvoiceType } from '@shared/enums';
+import { InvoiceType, PaymentProvider, PaymentStatus } from '@shared/enums';
 import type { InvoicesRepo, BranchRepo, SubscriptionsRepo, SubscriptionPlansRepo, CustomersRepo, BrandingRepo, OrdersRepo, PaymentsRepo } from '../../../application/ports';
 import { INVOICES_REPO, BRANCH_REPO, SUBSCRIPTIONS_REPO, SUBSCRIPTION_PLANS_REPO, CUSTOMERS_REPO, BRANDING_REPO, ORDERS_REPO, PAYMENTS_REPO } from '../../../infra/infra.module';
 import { getBrandingSnapshotForBranchId } from '../../../application/invoices/create-final-invoice-draft.use-case';
@@ -160,8 +160,8 @@ export class AdminSubscriptionsService {
     if (!invoice) throw new NotFoundException('Subscription invoice not found');
     await this.paymentsRepo.upsertForSubscription({
       subscriptionId,
-      provider: dto.provider as 'UPI' | 'CARD' | 'CASH' | 'OTHER',
-      status: dto.status as 'CAPTURED' | 'PENDING' | 'FAILED',
+      provider: dto.provider as PaymentProvider,
+      status: dto.status as PaymentStatus,
       amount: dto.amountPaise,
     });
     await this.invoicesRepo.updateSubscriptionAndPayment(invoice.id, { paymentStatus: 'PAID' });

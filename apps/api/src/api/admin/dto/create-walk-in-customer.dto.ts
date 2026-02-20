@@ -4,7 +4,7 @@ export class CreateWalkInCustomerDto {
   @IsString()
   @MinLength(10, { message: 'phone must be at least 10 digits' })
   @Matches(/^\d+$/, { message: 'phone must contain only digits' })
-  phone: string;
+  phone!: string;
 
   @IsOptional()
   @IsString()

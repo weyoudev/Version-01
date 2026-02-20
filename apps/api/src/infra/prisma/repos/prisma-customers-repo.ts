@@ -1,4 +1,5 @@
 import type { PrismaClient } from '@prisma/client';
+import { Role } from '@prisma/client';
 import type { CustomersRepo, CustomerRecord, UpdateCustomerPatch, ListCustomersResult, CreateCustomerInput } from '../../../application/ports';
 
 type PrismaLike = Pick<PrismaClient, 'user'>;
@@ -74,14 +75,17 @@ export class PrismaCustomersRepo implements CustomersRepo {
   }
 
   async list(limit: number, cursor?: string | null, search?: string | null): Promise<ListCustomersResult> {
-    const where: { role: string; OR?: Array<{ phone?: { contains: string; mode: 'insensitive' }; name?: { contains: string; mode: 'insensitive' } }> } = { role: 'CUSTOMER' };
-    if (search && search.trim()) {
-      const term = search.trim();
-      where.OR = [
-        { phone: { contains: term, mode: 'insensitive' } },
-        { name: { contains: term, mode: 'insensitive' } },
-      ];
-    }
+    const where = {
+      role: Role.CUSTOMER,
+      ...(search && search.trim()
+        ? {
+            OR: [
+              { phone: { contains: search.trim(), mode: 'insensitive' as const } },
+              { name: { contains: search.trim(), mode: 'insensitive' as const } },
+            ],
+          }
+        : {}),
+    };
     const take = limit + 1;
     const rows = await this.prisma.user.findMany({
       where,

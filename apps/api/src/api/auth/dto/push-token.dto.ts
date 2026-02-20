@@ -5,5 +5,5 @@ export class PushTokenDto {
   @IsString()
   @MinLength(10)
   @MaxLength(256)
-  pushToken: string;
+  pushToken!: string;
 }

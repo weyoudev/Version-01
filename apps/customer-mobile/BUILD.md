@@ -1,6 +1,6 @@
-# Building the Customer Mobile App (Android Beta)
+# Building the Customer Mobile App (Android & iOS Beta)
 
-This guide covers creating the **first Beta** Android build of the customer app using [EAS Build](https://docs.expo.dev/build/introduction/).
+This guide covers creating **Beta** builds of the customer app using [EAS Build](https://docs.expo.dev/build/introduction/) for both Android and iOS.
 
 ## Prerequisites
 
@@ -74,6 +74,42 @@ eas build --platform android --profile production
 ```
 
 This produces an **AAB** (Android App Bundle) for upload to Google Play Console. Configure signing (e.g. EAS credentials) and optionally `eas submit` as in `eas.json`.
+
+## First Beta build (iOS)
+
+From the repo root or from `apps/customer-mobile`:
+
+```bash
+# From repo root
+npm run build:ios:beta -w customer-mobile
+
+# Or from apps/customer-mobile
+npm run build:ios:beta
+```
+
+Or with EAS CLI:
+
+```bash
+cd apps/customer-mobile
+eas build --platform ios --profile preview
+```
+
+- **Profile**: `preview` – internal distribution (ad hoc build).
+- **Apple Developer account**: You need an [Apple Developer Program](https://developer.apple.com/programs/) membership ($99/year). EAS will prompt you to sign in with your Apple ID and can manage credentials.
+- **Output**: EAS gives you a link to download the build or install via simulator.
+- **Install on devices**: For internal testing, register test devices in your Apple Developer account. Install via the build link or use TestFlight for production builds later.
+
+**iOS version for next Betas:** Bump `expo.version` and `expo.ios.buildNumber` in `app.json` before each new Beta.
+
+## Production build (iOS / App Store)
+
+```bash
+eas build --platform ios --profile production
+```
+
+Produces an IPA for App Store Connect. Use `eas submit` or upload manually.
+
+---
 
 ## Troubleshooting
 

@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "d8e034d3-3102-4327-816f-ab6963fa5abd"
+      }
+    },
+    "android": {
+      "package": "com.weyouapp.weyouapp"
+    }
+  }
+}

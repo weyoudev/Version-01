@@ -16,15 +16,7 @@ import type {
 import { toIndiaDateKey, indiaDayUtcRange, dateKeyToDdMmYyyy } from '../../../application/time/india-date';
 
 /** Accepts PrismaClient or transaction client from prisma.$transaction(callback). */
-type PrismaLike = Pick<PrismaClient, 'order' | 'subscription' | 'serviceArea' | 'branch'> & Pick<PrismaClient, '$transaction'>;
-
-const PICKED_UP_OR_LATER: PrismaOrderStatus[] = [
-  PrismaOrderStatus.PICKED_UP,
-  PrismaOrderStatus.IN_PROCESSING,
-  PrismaOrderStatus.READY,
-  PrismaOrderStatus.OUT_FOR_DELIVERY,
-  PrismaOrderStatus.DELIVERED,
-];
+type PrismaLike = Pick<PrismaClient, 'order' | 'subscription' | 'serviceArea' | 'branch'>;
 
 function toOrderRecord(row: {
   id: string;

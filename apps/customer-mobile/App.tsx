@@ -628,19 +628,25 @@ export default function App() {
     const validationError = validatePhone(phone);
     if (validationError) {
       setError(validationError);
+      Alert.alert('Invalid number', validationError);
       return;
     }
     if (hasLegalContent && !acceptedTermsAndPrivacy) {
-      setError('Please accept the Terms and Conditions and Privacy Policy to continue.');
+      const msg = 'Please accept the Terms and Conditions and Privacy Policy to continue.';
+      setError(msg);
+      Alert.alert('Accept required', msg);
       return;
     }
     setLoading(true);
     try {
-      const { requestId: rid } = await requestOtp(phone.trim());
+      const data = await requestOtp(phone.trim());
+      const rid = data?.requestId ?? phone.trim();
       setRequestId(rid);
       setStep('otp');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send OTP.');
+      const message = err instanceof Error ? err.message : 'Failed to send OTP.';
+      setError(message);
+      Alert.alert('Could not send OTP', message, [{ text: 'OK' }]);
     } finally {
       setLoading(false);
     }
@@ -1077,28 +1083,28 @@ export default function App() {
         </View>
         {hasLegalContent && (
           <View style={styles.termsPrivacyBlock}>
-            <View style={styles.checkboxRow}>
-              <TouchableOpacity
-                onPress={() => setAcceptedTermsAndPrivacy((v) => !v)}
-                activeOpacity={0.7}
-                style={styles.checkboxTouchTarget}
-              >
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => setAcceptedTermsAndPrivacy((v) => !v)}
+              style={styles.checkboxRowTouchable}
+            >
+              <View style={styles.checkboxRow}>
                 <View style={[styles.termsCheckbox, acceptedTermsAndPrivacy && styles.termsCheckboxChecked]}>
                   {acceptedTermsAndPrivacy ? <MaterialIcons name="check" size={16} color={colors.white} /> : null}
                 </View>
-              </TouchableOpacity>
-              <Text style={styles.checkboxLabel}>
-                I accept the{' '}
-                {welcomeBranding?.termsAndConditions?.trim() ? (
-                  <Text style={styles.linkText} onPress={() => setLegalModalContent({ title: 'Terms and Conditions', body: welcomeBranding!.termsAndConditions!.trim() })}>Terms and Conditions</Text>
-                ) : null}
-                {welcomeBranding?.termsAndConditions?.trim() && welcomeBranding?.privacyPolicy?.trim() ? ' and ' : null}
-                {welcomeBranding?.privacyPolicy?.trim() ? (
-                  <Text style={styles.linkText} onPress={() => setLegalModalContent({ title: 'Privacy Policy', body: welcomeBranding!.privacyPolicy!.trim() })}>Privacy Policy</Text>
-                ) : null}
-                .
-              </Text>
-            </View>
+                <Text style={styles.checkboxLabel}>
+                  I accept the{' '}
+                  {welcomeBranding?.termsAndConditions?.trim() ? (
+                    <Text style={styles.linkText} onPress={() => setLegalModalContent({ title: 'Terms and Conditions', body: welcomeBranding!.termsAndConditions!.trim() })}>Terms and Conditions</Text>
+                  ) : null}
+                  {welcomeBranding?.termsAndConditions?.trim() && welcomeBranding?.privacyPolicy?.trim() ? ' and ' : null}
+                  {welcomeBranding?.privacyPolicy?.trim() ? (
+                    <Text style={styles.linkText} onPress={() => setLegalModalContent({ title: 'Privacy Policy', body: welcomeBranding!.privacyPolicy!.trim() })}>Privacy Policy</Text>
+                  ) : null}
+                  .
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
         )}
         <TouchableOpacity
@@ -3503,6 +3509,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 10,
+  },
+  checkboxRowTouchable: {
+    alignSelf: 'stretch',
   },
   checkboxTouchTarget: {
     padding: 4,

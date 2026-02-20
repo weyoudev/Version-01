@@ -12,7 +12,7 @@ import {
 import { Type } from 'class-transformer';
 import { SubscriptionVariant, RedemptionMode } from '@shared/enums';
 
-const REDEMPTION_MODE_VALUES: RedemptionMode[] = ['MULTI_USE', 'SINGLE_USE'];
+const REDEMPTION_MODE_VALUES: RedemptionMode[] = [RedemptionMode.MULTI_USE, RedemptionMode.SINGLE_USE];
 
 export class PatchSubscriptionPlanDto {
   @IsOptional()

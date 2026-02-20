@@ -39,8 +39,11 @@ export class AdminCarouselController {
   @UseInterceptors(FileInterceptor('file'))
   async upload(
     @UploadedFile() file: MulterUploadFile,
-    @Query('position', new ParseIntPipe({ min: 1, max: 3 })) position: number,
+    @Query('position', new ParseIntPipe()) position: number,
   ) {
+    if (position < 1 || position > 3) {
+      throw new BadRequestException('position must be between 1 and 3');
+    }
     if (!file?.buffer) {
       throw new BadRequestException('File is required');
     }
@@ -54,8 +57,11 @@ export class AdminCarouselController {
   @Delete(':position')
   @Roles(Role.ADMIN, Role.BILLING)
   async remove(
-    @Param('position', new ParseIntPipe({ min: 1, max: 3 })) position: number,
+    @Param('position', new ParseIntPipe()) position: number,
   ) {
+    if (position < 1 || position > 3) {
+      throw new BadRequestException('position must be between 1 and 3');
+    }
     return this.adminCarouselService.remove(position);
   }
 }

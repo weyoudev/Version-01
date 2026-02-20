@@ -53,7 +53,6 @@ async function bootstrap() {
   // Retry DB verification (Supabase can take 10–30s to become reachable after restore from pause)
   const maxAttempts = 5;
   const delayMs = 3000;
-  let verified = false;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       const row = await prisma.$queryRaw<[{ current_database: string; current_schema: string }]>`
@@ -62,7 +61,6 @@ async function bootstrap() {
       if (row?.[0]) {
         // eslint-disable-next-line no-console
         console.log(`DB verified: schema=${row[0].current_schema}`);
-        verified = true;
         break;
       }
     } catch (err) {

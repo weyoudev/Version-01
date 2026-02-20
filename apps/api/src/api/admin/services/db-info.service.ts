@@ -39,8 +39,8 @@ export class DbInfoService {
     ]).catch(() => [null, null, [{ exists: false }]]);
 
     const hasMigrationsTable = migrationsTableExistsRow?.[0]?.exists === true;
-    let migrationCountResult: [{ count: bigint }] | null = null;
-    let latestMigrationRow: [{ migration_name: string }] | null = null;
+    let migrationCountResult: { count: bigint }[] | null = null;
+    let latestMigrationRow: { migration_name: string }[] = [];
     if (hasMigrationsTable) {
       try {
         [migrationCountResult, latestMigrationRow] = await Promise.all([
@@ -59,10 +59,10 @@ export class DbInfoService {
     const firstRow = dbRow?.[0];
     const database_name = firstRow && 'current_database' in firstRow ? firstRow.current_database : '(unknown)';
     const schema = firstRow && 'current_schema' in firstRow ? firstRow.current_schema : '(unknown)';
-    const table_count = Number(tableCountRow?.[0]?.count ?? 0);
+    const tableRow = tableCountRow?.[0];
+    const table_count = Number(tableRow && 'count' in tableRow ? tableRow.count : 0);
     const migration_count = Number(migrationCountResult?.[0]?.count ?? 0);
-    const latest_migration_name =
-      latestMigrationRow && latestMigrationRow[0] ? (latestMigrationRow[0] as { migration_name: string }).migration_name : null;
+    const latest_migration_name = latestMigrationRow[0]?.migration_name ?? null;
 
     let user_count = 0;
     try {

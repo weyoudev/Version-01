@@ -1,0 +1,35 @@
+# Build the API image and push to Artifact Registry.
+# Run from repo root: gcloud builds submit --config apps/api/cloudbuild.yaml .
+# Replace YOUR_PROJECT_ID and REGION (e.g. us-central1) before running.
+
+substitutions:
+  _PROJECT_ID: YOUR_PROJECT_ID
+  _REGION: us-central1
+  _REPOSITORY: weyou-api
+
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'apps/api/Dockerfile'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/weyou-api:${SHORT_SHA}'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/weyou-api:latest'
+      - '.'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/weyou-api:${SHORT_SHA}'
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/weyou-api:latest'
+
+images:
+  - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/weyou-api:${SHORT_SHA}'
+  - '${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/weyou-api:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

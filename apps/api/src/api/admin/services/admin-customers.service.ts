@@ -241,7 +241,7 @@ export class AdminCustomersService {
     const pincodeToBranchId = new Map<string, string | null>(
       pincodesToResolve.map(({ pincode }, i) => [pincode, serviceAreasByPincode[i]?.branchId ?? null]),
     );
-    const orderIdToBranchId = new Map<string | null>(
+    const orderIdToBranchId = new Map<string, string | null>(
       orderIds.map((id, i) => {
         const order = orders[i];
         const bid = order?.branchId ?? null;
@@ -250,7 +250,7 @@ export class AdminCustomersService {
         return [id, fromPincode] as const;
       }),
     );
-    const subIdToBranchId = new Map<string | null>(subIds.map((id, i) => [id, subs[i]?.branchId ?? null]));
+    const subIdToBranchId = new Map<string, string | null>(subIds.map((id, i) => [id, subs[i]?.branchId ?? null]));
     const branchIds = new Set<string>([
       ...orderIdToBranchId.values(),
       ...subIdToBranchId.values(),
