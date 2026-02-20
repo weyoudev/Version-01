@@ -18,7 +18,7 @@ const DEFAULT_PRESET: AnalyticsPreset = 'THIS_MONTH';
 function getErrorMessage(err: unknown): string {
   if (err && typeof err === 'object' && 'response' in err) {
     const ax = err as AxiosError<{ error?: string; message?: string }>;
-    const msg = ax.response?.data?.error ?? ax.response?.data?.message ?? (err as Error).message;
+    const msg = ax.response?.data?.error ?? ax.response?.data?.message ?? (err instanceof Error ? err.message : String(err));
     return msg || 'Request failed';
   }
   return err instanceof Error ? err.message : 'Request failed';
