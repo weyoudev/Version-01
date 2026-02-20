@@ -242,7 +242,7 @@ export function CustomerOrdersTable({ userId, role, userBranchId }: CustomerOrde
             id="orders-branch-filter"
             className="h-9 min-w-[160px] rounded-md border border-input bg-background px-3 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
             value={effectiveBranchId}
-            disabled={isBranchHead}
+            disabled={!!isBranchHead}
             onChange={(e) => setBranchIdFilter(e.target.value)}
             title={isBranchHead ? 'Your assigned branch (filter locked)' : 'Filter by branch'}
           >
