@@ -156,7 +156,7 @@ export function AdminUserDialog({
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <ErrorDisplay error={error} />}
+          {error ? <ErrorDisplay error={error} /> : null}
           <div className="space-y-1">
             <label className="text-sm font-medium" htmlFor="name">
               Name

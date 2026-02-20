@@ -59,7 +59,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <ErrorDisplay error={error} />}
+            {error ? <ErrorDisplay error={error} /> : null}
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email

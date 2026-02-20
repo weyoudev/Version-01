@@ -59,7 +59,7 @@ export function AddItemModal({ open, onOpenChange }: AddItemModalProps) {
           <DialogHeader>
             <DialogTitle>Add item</DialogTitle>
           </DialogHeader>
-          {error && <ErrorDisplay error={error} />}
+          {error ? <ErrorDisplay error={error} /> : null}
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <label htmlFor="add-name" className="text-sm font-medium">

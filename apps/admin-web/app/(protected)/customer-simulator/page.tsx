@@ -792,7 +792,7 @@ export default function CustomerSimulatorPage() {
             <Button onClick={handleOtpLogin} disabled={loading}>
               {loading ? 'Submitting…' : 'Submit'}
             </Button>
-            {error && <ErrorDisplay error={error} />}
+            {error ? <ErrorDisplay error={error} /> : null}
           </CardContent>
         </Card>
       )}
@@ -882,7 +882,7 @@ export default function CustomerSimulatorPage() {
               <Button type="submit" disabled={loading}>
                 {loading ? 'Saving…' : 'Save and continue to order'}
               </Button>
-              {error && <ErrorDisplay error={error} />}
+              {error ? <ErrorDisplay error={error} /> : null}
             </form>
           </CardContent>
         </Card>
@@ -912,7 +912,7 @@ export default function CustomerSimulatorPage() {
                 ))}
               </div>
             )}
-            {error && <ErrorDisplay error={error} />}
+            {error ? <ErrorDisplay error={error} /> : null}
           </CardContent>
         </Card>
       )}
@@ -969,7 +969,7 @@ export default function CustomerSimulatorPage() {
               <Button type="submit" disabled={loading}>
                 {loading ? 'Adding…' : 'Add address'}
               </Button>
-              {error && <ErrorDisplay error={error} />}
+              {error ? <ErrorDisplay error={error} /> : null}
             </form>
           </CardContent>
         </Card>
@@ -1219,7 +1219,7 @@ export default function CustomerSimulatorPage() {
               <label className="text-xs font-medium text-muted-foreground">Pincode * (6 digits)</label>
               <Input value={addressPincode} onChange={(e) => setAddressPincode(e.target.value)} placeholder="560001" disabled={addAddressLoading} className="mt-1" maxLength={6} />
             </div>
-            {error && <ErrorDisplay error={error} />}
+            {error ? <ErrorDisplay error={error} /> : null}
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setAddAddressModalOpen(false)}>Cancel</Button>
               <Button type="submit" disabled={addAddressLoading}>{addAddressLoading ? 'Adding…' : 'Add address'}</Button>
@@ -1259,7 +1259,7 @@ export default function CustomerSimulatorPage() {
                 maxLength={6}
               />
             </div>
-            {error && <ErrorDisplay error={error} />}
+            {error ? <ErrorDisplay error={error} /> : null}
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={closeConfirmOrderOtpDialog} disabled={confirmOrderOtpLoading}>
                 Cancel
