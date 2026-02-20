@@ -24,7 +24,7 @@ function fetchRevenue(
   dateTo?: string
 ): Promise<AnalyticsResponse> {
   const params = new URLSearchParams();
-  if (preset && preset !== 'CUSTOM') params.set('preset', preset);
+  if (preset) params.set('preset', preset);
   if (dateFrom) params.set('dateFrom', dateFrom);
   if (dateTo) params.set('dateTo', dateTo);
   const q = params.toString();
