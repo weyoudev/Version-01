@@ -348,7 +348,7 @@ export default function CustomerSimulatorPage() {
     setAddressesLoading(true);
     const result = await apiWithToken<AddressRecord[]>('GET', '/addresses', customerToken);
     setAddressesLoading(false);
-    if (result.ok) {
+    if (result.ok && result.data) {
       // Show only customer's saved addresses; exclude Walk-in addresses (from walk-in order flow).
       const savedAddresses = result.data.filter(
         (a) => (a.label || '').trim().toLowerCase() !== 'walk-in'
@@ -568,9 +568,11 @@ export default function CustomerSimulatorPage() {
         setError(result.error);
         return;
       }
-      setMe(result.data);
-      setStep(result.data.defaultAddress ? 'form' : 'address');
-      toast.success('Loaded customer profile');
+      if (result.data) {
+        setMe(result.data);
+        setStep(result.data.defaultAddress ? 'form' : 'address');
+        toast.success('Loaded customer profile');
+      }
     } catch (e) {
       setError(e);
     } finally {
@@ -600,9 +602,11 @@ export default function CustomerSimulatorPage() {
       setError(result.error);
       return;
     }
-    setOrderId(result.data.orderId);
-    setStep('done');
-    toast.success('Order created');
+    if (result.data) {
+      setOrderId(result.data.orderId);
+      setStep('done');
+      toast.success('Order created');
+    }
   };
 
   const handleCreateOrder = async (e: React.FormEvent) => {
@@ -731,8 +735,8 @@ export default function CustomerSimulatorPage() {
       }
       toast.success('Address added.');
       const meResult = await apiWithToken<typeof me>('GET', '/me', customerToken);
-      if (meResult.ok) setMe(meResult.data);
-      if (fromModal) {
+      if (meResult.ok && meResult.data) setMe(meResult.data);
+      if (fromModal && result.data) {
         await fetchAddresses();
         setSelectedAddressId(result.data.id);
         setAddAddressModalOpen(false);
