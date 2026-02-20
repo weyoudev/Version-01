@@ -294,7 +294,7 @@ export default function SchedulePage() {
             className="flex h-9 min-w-[200px] rounded-md border border-input bg-background px-3 py-1 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
             value={selectedBranchId}
             onChange={(e) => setSelectedBranchId(e.target.value)}
-            disabled={isBranchHead}
+            disabled={!!isBranchHead}
             title={isBranchHead ? 'Your assigned branch (filter locked)' : undefined}
           >
             {branches.map((b) => (

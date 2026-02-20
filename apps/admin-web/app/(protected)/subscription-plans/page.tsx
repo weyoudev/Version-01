@@ -84,7 +84,7 @@ export default function SubscriptionPlansPage() {
             selectedBranchIds={selectedBranchIds}
             onChange={setSelectedBranchIds}
             compactLabel
-            disabled={isBranchHead}
+            disabled={!!isBranchHead}
           />
           <RoleGate role={role} gate="catalogEdit">
             <Button onClick={() => setAddOpen(true)}>Add plan</Button>

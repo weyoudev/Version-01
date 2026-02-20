@@ -124,7 +124,7 @@ export default function CatalogPage() {
             selectedBranchIds={selectedBranchIds}
             onChange={setSelectedBranchIds}
             compactLabel
-            disabled={isBranchHead}
+            disabled={!!isBranchHead}
           />
           <RoleGate role={role} gate="catalogEdit">
             <Button variant="outline" size="sm" onClick={() => setManageOpen(true)}>

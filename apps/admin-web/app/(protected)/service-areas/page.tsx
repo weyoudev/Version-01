@@ -70,7 +70,7 @@ export default function ServiceAreasPage() {
             className="flex h-9 min-w-[160px] rounded-md border border-input bg-background px-3 py-1 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
-            disabled={isBranchHead}
+            disabled={!!isBranchHead}
             title={isBranchHead ? 'Your assigned branch (filter locked)' : undefined}
           >
             <option value="">All branches</option>
