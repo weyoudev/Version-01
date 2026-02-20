@@ -494,7 +494,8 @@ export function InvoiceBuilder({
                                 const keepCurrent =
                                   row.segmentCategoryId &&
                                   row.serviceCategoryId &&
-                                  svcsForCurrentSeg?.some((s) => s.id === row.serviceCategoryId);
+                                  Array.isArray(svcsForCurrentSeg) &&
+                                  svcsForCurrentSeg.some((s) => s.id === row.serviceCategoryId);
                                 const segmentId = keepCurrent ? row.segmentCategoryId : segs[0]?.id ?? '';
                                 const svcs = getServicesForItemAndSegment(newItemId, segmentId);
                                 const serviceId =
