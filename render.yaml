@@ -1,0 +1,29 @@
+# Render Blueprint: deploy WeYou API as a Docker web service.
+# Use "New" -> "Blueprint" in Render and connect this repo, or create a Web Service manually and set:
+# - Environment: Docker
+# - Dockerfile Path: apps/api/Dockerfile
+# - Root Directory: (leave empty)
+
+services:
+  - type: web
+    name: weyou-api
+    runtime: docker
+    dockerfilePath: apps/api/Dockerfile
+    # Root Directory must be empty so build context is repo root (where package.json lives)
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: LOCAL_STORAGE_ROOT
+        value: /tmp/storage
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_VERIFY_SERVICE_SID
+        sync: false
