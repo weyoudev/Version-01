@@ -11,9 +11,11 @@ export function getApiOrigin(): string {
 }
 
 const baseURL = API_BASE_URL;
+const isRender = baseURL.includes('onrender.com');
 
 export const api = axios.create({
   baseURL,
+  timeout: isRender ? 60000 : 15000, // Render cold start can take 30–60s
   headers: {
     'Content-Type': 'application/json',
   },
@@ -76,7 +78,11 @@ export function getFriendlyErrorMessage(error: unknown): string {
     return 'Database schema is out of date. From repo root run: npm run prisma:migrate then npm run prisma:generate, then restart the API (npm run dev:api).';
   }
   if (axios.isAxiosError(error) && (error.code === 'ERR_NETWORK' || !error.response)) {
-    return `Cannot connect to the API at ${baseURL}. Make sure the API server is running (e.g. npm run dev:api from repo root) and that NEXT_PUBLIC_API_URL in apps/admin-web/.env.local matches (e.g. http://localhost:3005/api).`;
+    const isRemoteApi = baseURL.startsWith('https://') || baseURL.includes('onrender.com');
+    if (isRemoteApi) {
+      return `Cannot reach the API at ${baseURL}. If using Render: wait 30–60s (cold start) then refresh, or check the Render dashboard. Ensure NEXT_PUBLIC_API_URL in apps/admin-web/.env.local is exactly https://weyou-api.onrender.com/api and restart the dev server (stop, then npm run dev:admin). Clear the Next cache if needed: delete apps/admin-web/.next and restart.`;
+    }
+    return `Cannot connect to the API at ${baseURL}. Start the API (npm run dev:api) or set NEXT_PUBLIC_API_URL in apps/admin-web/.env.local to https://weyou-api.onrender.com/api for Render. Restart the dev server after changing .env.local.`;
   }
   if (api.status === 401) {
     return 'Invalid email or password. Check that the user exists with role Admin/Billing/OPS and the password is correct.';
