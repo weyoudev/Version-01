@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FeedbackStatus = exports.FeedbackType = exports.InvoiceItemType = exports.SubscriptionVariant = exports.InvoiceStatus = exports.InvoiceType = exports.InvoiceOrderMode = exports.PaymentStatus = exports.PaymentProvider = exports.Role = exports.OrderType = exports.OrderStatus = exports.Segment = exports.ServiceType = void 0;
+exports.FeedbackStatus = exports.FeedbackType = exports.InvoiceItemType = exports.RedemptionMode = exports.SubscriptionVariant = exports.InvoiceStatus = exports.InvoiceType = exports.InvoiceOrderMode = exports.PaymentStatus = exports.PaymentProvider = exports.Role = exports.OrderType = exports.OrderStatus = exports.Segment = exports.ServiceType = void 0;
 var ServiceType;
 (function (ServiceType) {
     ServiceType["WASH_FOLD"] = "WASH_FOLD";
@@ -78,6 +78,11 @@ var SubscriptionVariant;
     SubscriptionVariant["COUPLE"] = "COUPLE";
     SubscriptionVariant["FAMILY"] = "FAMILY";
 })(SubscriptionVariant || (exports.SubscriptionVariant = SubscriptionVariant = {}));
+var RedemptionMode;
+(function (RedemptionMode) {
+    RedemptionMode["MULTI_USE"] = "MULTI_USE";
+    RedemptionMode["SINGLE_USE"] = "SINGLE_USE";
+})(RedemptionMode || (exports.RedemptionMode = RedemptionMode = {}));
 var InvoiceItemType;
 (function (InvoiceItemType) {
     InvoiceItemType["SERVICE"] = "SERVICE";
