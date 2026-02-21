@@ -104,17 +104,14 @@ export default function DashboardPage() {
     return { list: missedFirst, byDate, orderedKeys };
   }, [ordersData?.data, todayKey]);
 
-  if (error) {
-    return (
-      <div>
-        <p className="text-sm text-destructive">Failed to load analytics.</p>
-        <ErrorDisplay error={error} className="mt-2" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
+      {error && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/40">
+          <p className="text-sm font-medium text-amber-800 dark:text-amber-200">Failed to load analytics.</p>
+          <ErrorDisplay error={error} className="mt-2" />
+        </div>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <BranchFilter

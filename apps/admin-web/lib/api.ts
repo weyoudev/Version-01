@@ -98,6 +98,9 @@ export function getFriendlyErrorMessage(error: unknown): string {
     }
     return `Cannot connect to the API at ${baseURL}. For local API run npm run dev:api from repo root. For Render set NEXT_PUBLIC_API_URL=https://weyou-api.onrender.com/api in apps/admin-web/.env.local.${cacheHint}`;
   }
+  if (api.status === 404) {
+    return 'The endpoint was not found (404). Redeploy the API on Render (weyou-api) with the latest code so routes like /api/admin/analytics/revenue are available. Use "Clear build cache & deploy" in the Render dashboard.';
+  }
   if (api.status === 401) {
     return 'Invalid email or password. Check that the user exists with role Admin/Billing/OPS and the password is correct.';
   }
