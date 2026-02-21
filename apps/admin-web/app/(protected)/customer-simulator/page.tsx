@@ -8,7 +8,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { ErrorDisplay } from '@/components/shared/ErrorDisplay';
-import { API_BASE_URL } from '@/lib/api';
+import { getBaseURL } from '@/lib/api';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { ExternalLink } from 'lucide-react';
@@ -40,7 +40,8 @@ const OTP_DEV = '123456';
 async function checkServiceability(
   pincode: string
 ): Promise<{ serviceable: boolean; message?: string }> {
-  const url = `${API_BASE_URL.replace(/\/$/, '')}/serviceability?pincode=${encodeURIComponent(pincode)}`;
+  const base = getBaseURL().replace(/\/$/, '');
+  const url = `${base}/serviceability?pincode=${encodeURIComponent(pincode)}`;
   try {
     const res = await fetch(url);
     const data = await res.json();
@@ -59,7 +60,8 @@ async function apiWithToken<T>(
   customerToken: string,
   body?: unknown
 ): Promise<{ ok: true; data: T } | { ok: false; error: unknown }> {
-  const url = `${API_BASE_URL.replace(/\/$/, '')}${path.startsWith('/') ? path : '/' + path}`;
+  const base = getBaseURL().replace(/\/$/, '');
+  const url = `${base}${path.startsWith('/') ? path : '/' + path}`;
   try {
     const res = await fetch(url, {
       method,
@@ -403,7 +405,7 @@ export default function CustomerSimulatorPage() {
     let cancelled = false;
     (async () => {
       try {
-        const reqRes = await fetch(`${API_BASE_URL.replace(/\/$/, '')}/auth/customer/otp/request`, {
+        const reqRes = await fetch(`${getBaseURL().replace(/\/$/, '')}/auth/customer/otp/request`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone: parsed.data }),
@@ -431,7 +433,7 @@ export default function CustomerSimulatorPage() {
     }
     setLoading(true);
     try {
-      const reqRes = await fetch(`${API_BASE_URL.replace(/\/$/, '')}/auth/customer/otp/request`, {
+      const reqRes = await fetch(`${getBaseURL().replace(/\/$/, '')}/auth/customer/otp/request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: parsed.data }),
@@ -441,7 +443,7 @@ export default function CustomerSimulatorPage() {
         setError(new Error(reqData?.error?.message ?? `HTTP ${reqRes.status}`));
         return;
       }
-      const verifyRes = await fetch(`${API_BASE_URL.replace(/\/$/, '')}/auth/customer/otp/verify`, {
+      const verifyRes = await fetch(`${getBaseURL().replace(/\/$/, '')}/auth/customer/otp/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -649,7 +651,7 @@ export default function CustomerSimulatorPage() {
     try {
       let requestId = confirmOrderRequestId;
       if (!requestId) {
-        const reqRes = await fetch(`${API_BASE_URL.replace(/\/$/, '')}/auth/customer/otp/request`, {
+        const reqRes = await fetch(`${getBaseURL().replace(/\/$/, '')}/auth/customer/otp/request`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone: parsed.data }),
@@ -662,7 +664,7 @@ export default function CustomerSimulatorPage() {
         }
         requestId = reqData.requestId;
       }
-      const verifyRes = await fetch(`${API_BASE_URL.replace(/\/$/, '')}/auth/customer/otp/verify`, {
+      const verifyRes = await fetch(`${getBaseURL().replace(/\/$/, '')}/auth/customer/otp/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

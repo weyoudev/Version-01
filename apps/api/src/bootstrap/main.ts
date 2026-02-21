@@ -12,8 +12,19 @@ async function bootstrap() {
     logger: ['error', 'warn', 'log'],
   });
 
+  const allowedOrigins = [
+    'https://weyou-admin.onrender.com',
+    /^http:\/\/localhost(:\d+)?$/,
+    /^http:\/\/127\.0\.0\.1(:\d+)?$/,
+  ];
   app.enableCors({
-    origin: true, // reflect request origin (allows admin on localhost, mobile, etc.)
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.some((o) => (typeof o === 'string' ? o === origin : o.test(origin)))) {
+        return callback(null, true);
+      }
+      return callback(null, true); // fallback: allow (e.g. mobile, other hosts)
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

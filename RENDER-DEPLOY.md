@@ -28,3 +28,31 @@ If the mobile app shows **"Request failed (404). The API may need to be redeploy
 ## If you use a different branch
 
 In Render: **weyou-api** → **Settings** → **Build & Deploy** → set **Branch** to the one you push to (e.g. `master` or `main`), then trigger a deploy from that branch.
+
+---
+
+# Admin frontend on Render (weyou-admin)
+
+If the admin at **https://weyou-admin.onrender.com** shows "Failed to load analytics" or "Cannot connect to the API" with old text (e.g. localhost:3005), the deployed app was built **without** the correct API URL. Next.js bakes `NEXT_PUBLIC_*` into the client bundle at **build time**, so the env var must be set on Render **before** the build runs.
+
+## Steps
+
+1. **Set the env var on Render**
+   - Open [dashboard.render.com](https://dashboard.render.com) → your **admin** service (e.g. **weyou-admin**).
+   - Go to **Environment**.
+   - Add or edit:
+     - **Key:** `NEXT_PUBLIC_API_URL`
+     - **Value:** `https://weyou-api.onrender.com/api` (no trailing slash after `api`)
+   - Save changes.
+
+2. **Clear build cache and redeploy**
+   - In the same service, go to **Manual Deploy** (or **Deploy**).
+   - Use **Clear build cache & deploy** (or **Deploy** with “Clear build cache” if shown).
+   - Wait until the deploy is **Live**.
+
+3. **Hard refresh the browser**
+   - Open https://weyou-admin.onrender.com/dashboard and do a hard refresh (Ctrl+Shift+R) or open in an incognito window.
+
+After this, the admin will call the Render API and show the updated error messages.
+
+**Network Error fix (same-origin proxy):** The admin app now proxies API requests through its own origin when running at `weyou-admin.onrender.com`. So the browser talks only to `weyou-admin.onrender.com` (e.g. `/api-proxy/...`), and the Next.js server forwards those requests to `weyou-api.onrender.com`. That avoids CORS and connection issues. After deploying the latest code (with the proxy), set `NEXT_PUBLIC_API_URL` as above, clear build cache, redeploy, then hard refresh. If the API is cold, wait 30–60s and refresh again.

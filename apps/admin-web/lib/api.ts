@@ -4,6 +4,14 @@ import { getToken } from './auth';
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003/api';
 
+/** When admin is deployed on Render, use same-origin proxy to avoid CORS/network errors. */
+export function getBaseURL(): string {
+  if (typeof window !== 'undefined' && window.location.origin.includes('weyou-admin.onrender.com')) {
+    return '/api-proxy';
+  }
+  return API_BASE_URL;
+}
+
 /** Origin of the API server (e.g. http://localhost:3003) for building absolute URLs like PDF links. */
 export function getApiOrigin(): string {
   const u = API_BASE_URL.replace(/\/api\/?$/, '');
@@ -22,6 +30,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  config.baseURL = getBaseURL();
   const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

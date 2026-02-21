@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { api, getApiOrigin, getApiError } from '@/lib/api';
+import { api, getBaseURL, getApiError } from '@/lib/api';
 import { getToken, getStoredUser } from '@/lib/auth';
 
 export type StatusState = 'green' | 'yellow' | 'red';
@@ -33,13 +33,14 @@ export function useSystemStatus(): SystemStatusResult {
   const run = useCallback(async () => {
     setChecking(true);
     setLastError(null);
-    const origin = getApiOrigin();
     const token = typeof window !== 'undefined' ? getToken() : null;
     const user = typeof window !== 'undefined' ? getStoredUser() : null;
 
-    // 1) API reachable (GET /)
+    // 1) API reachable (GET /) — use getBaseURL() so Render admin uses same-origin proxy
+    const apiBase = getBaseURL();
+    const apiRoot = apiBase.startsWith('http') ? `${apiBase.replace(/\/$/, '')}/` : `${typeof window !== 'undefined' ? window.location.origin : ''}${apiBase}/`;
     try {
-      const res = await fetch(`${origin}/`, { method: 'GET', signal: AbortSignal.timeout(5000) });
+      const res = await fetch(apiRoot, { method: 'GET', signal: AbortSignal.timeout(5000) });
       if (res.ok) {
         setApiState('green');
       } else {
