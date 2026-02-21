@@ -9,7 +9,7 @@ You can use **one project** (Admin + API on the same domain) or **two projects**
 **Best if:** You want a single URL like `weyouapp-v-01-admin-web-1xhg.vercel.app` for both the app and the API.
 
 1. **Create one project** in Vercel and import this repo.
-2. **Root Directory:** leave **empty** (repo root).
+2. **Root Directory:** leave **empty** (repo root). If you set it to `apps/admin-web`, the build will fail with "Missing script: prisma:generate" because that script lives in the root.
 3. **Framework Preset:** Other.
 4. The repo’s **`vercel.json`** already configures:
    - Build: `npm run prisma:generate && npm run build:api` (then Next.js builds from `apps/admin-web`).
