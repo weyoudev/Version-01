@@ -31,6 +31,27 @@ In Render: **weyou-api** → **Settings** → **Build & Deploy** → set **Branc
 
 ---
 
+# Admin: "Failed to load analytics" with 404
+
+If the admin dashboard shows **"The endpoint was not found (404)"** for analytics, the **weyou-api** service on Render is serving an old deploy that doesn’t include the analytics routes.
+
+**Do this:**
+
+1. Open [dashboard.render.com](https://dashboard.render.com) and select the **weyou-api** service (the API, not the admin).
+2. Go to **Settings** → **Build & Deploy**. Confirm **Branch** is the one you use (e.g. `main` or `master`).
+3. Go back to the service and click **Manual Deploy** → **Clear build cache & deploy**.
+4. Wait until the deploy is **Live** and the build log has no errors.
+5. Test the analytics route (requires no auth):
+   - Open: **https://weyou-api.onrender.com/api**
+   - You should see JSON. Then try (in browser or Postman; 401 is OK, 404 means route missing):
+   - **https://weyou-api.onrender.com/api/admin/analytics/dashboard-kpis**  
+     (You should get 401 Unauthorized if the API is new; 404 means the route still isn’t there.)
+6. Reload the admin dashboard and hard refresh (Ctrl+Shift+R).
+
+If you still get 404 after a clean deploy, check the **weyou-api** build log for errors and that the correct branch is deployed.
+
+---
+
 # Admin frontend on Render (weyou-admin)
 
 If the admin at **https://weyou-admin.onrender.com** shows "Failed to load analytics" or "Cannot connect to the API" with old text (e.g. localhost:3005), the deployed app was built **without** the correct API URL. Next.js bakes `NEXT_PUBLIC_*` into the client bundle at **build time**, so the env var must be set on Render **before** the build runs.
