@@ -1,17 +1,10 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "declaration": true,
-    "sourceMap": true,
+    "rootDir": ".",
     "outDir": "dist",
-    "rootDir": "../..",
-    "baseUrl": ".",
-    "types": ["node"],
-    "paths": {
-      "@shared/*": ["../../packages/shared/src/*"],
-      "@prisma/client": ["src/infra/generated/prisma-client"],
-      "@prisma/client/*": ["src/infra/generated/prisma-client/*"]
-    }
+    "declaration": false,
+    "sourceMap": false
   },
   "include": [
     "src",
