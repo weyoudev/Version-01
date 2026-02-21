@@ -92,7 +92,7 @@ export function getFriendlyErrorMessage(error: unknown): string {
   }
   if (axios.isAxiosError(error) && (error.code === 'ERR_NETWORK' || !error.response)) {
     const isRemoteApi = baseURL.startsWith('https://') || baseURL.includes('onrender.com');
-    const cacheHint = ' To load the correct API URL, clear the Next cache: from repo root run npm run dev:fresh -w admin-web, or delete apps/admin-web/.next and restart the dev server.';
+    const cacheHint = ' To load the correct API URL, clear the Next cache: from repo root run npm run dev:admin:fresh, or delete apps/admin-web/.next and restart the dev server.';
     if (isRemoteApi) {
       return `Cannot reach the API at ${baseURL}. If using Render: wait 30–60s (cold start) then refresh, or check the Render dashboard. Ensure .env.local has NEXT_PUBLIC_API_URL=https://weyou-api.onrender.com/api.${cacheHint}`;
     }

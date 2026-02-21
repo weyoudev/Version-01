@@ -38,6 +38,7 @@
     "build:admin": "npm run build -w admin-web",
     "build:admin:render": "npm install && cd apps/admin-web && npx next build",
     "dev:admin": "npm run dev -w admin-web",
+    "dev:admin:fresh": "node -e \"const fs=require('fs'); const path=require('path'); const p=path.join('apps','admin-web','.next'); try { fs.rmSync(p, { recursive: true }); } catch (_) {}\" && npm run dev:admin",
     "dev:customer": "npm run dev -w customer-web",
     "dev:customer-mobile": "cd apps/customer-mobile && npx expo start",
     "dev:customer-mobile:clear": "cd apps/customer-mobile && npx expo start -c"
