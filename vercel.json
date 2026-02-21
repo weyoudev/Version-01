@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": "npm run prisma:generate && npm run build:api",
+  "buildCommand": "node scripts/vercel-build-conditional.js",
   "installCommand": "npm ci",
   "builds": [
     { "src": "apps/admin-web/package.json", "use": "@vercel/next" },

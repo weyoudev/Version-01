@@ -78,7 +78,7 @@ In the **current** project (e.g. `weyouapp-v-01-admin-web-1xhg`): **Settings →
 3. **Root Directory:** set to **`apps/admin-web`**.  
 4. **Framework Preset:** **Next.js**.  
 5. **Build Command (required):** Vercel may still use the root repo’s build. In this project go to **Settings → General**. Under **Build and Development Settings**, turn **Override** ON for **Build Command** and set it to **`npm run build`**. Save. (Otherwise you’ll see "Missing script: prisma:generate".)  
-6. **Environment variables:** add **`NEXT_PUBLIC_API_URL`** = **`https://weyouapp-v-01-admin-web-1xhg.vercel.app/api`** (your current project URL + `/api`).  
+6. **Environment variables:** add **`NEXT_PUBLIC_API_URL`** = your API project URL + `/api`. Also add **`VERCEL_ADMIN_ONLY`** = **`1`** (so the build runs only the Next app, not Prisma/API). Save.  
 7. Deploy.
 
 **Step 3 – Use the new URL**  
