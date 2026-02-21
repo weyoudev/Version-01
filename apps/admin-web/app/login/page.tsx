@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api, getApiError, getApiOrigin } from '@/lib/api';
+import { api, getApiError, getApiOrigin, getBaseURL } from '@/lib/api';
 import { setToken, setStoredUser, type AuthUser } from '@/lib/auth';
 import { usePublicBranding } from '@/hooks/useBranding';
 import { Button } from '@/components/ui/button';
@@ -76,7 +76,14 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error ? <ErrorDisplay error={error} /> : null}
+            {error ? (
+              <>
+                <ErrorDisplay error={error} />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Using API: <code className="rounded bg-muted px-1 font-mono">{getBaseURL()}</code>
+                </p>
+              </>
+            ) : null}
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email

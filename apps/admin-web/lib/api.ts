@@ -95,15 +95,15 @@ export function getFriendlyErrorMessage(error: unknown): string {
     return 'Database schema is out of date. From repo root run: npm run prisma:migrate then npm run prisma:generate, then restart the API (npm run dev:api).';
   }
   if (axios.isAxiosError(error) && (error.code === 'ERR_NETWORK' || !error.response)) {
-    const isRemoteApi = baseURL.startsWith('https://') || baseURL.includes('onrender.com');
+    const isRemoteApi = baseURL.startsWith('https://') || baseURL.includes('onrender.com') || baseURL.includes('vercel.app');
     const cacheHint = ' To load the correct API URL, clear the Next cache: from repo root run npm run dev:admin:fresh, or delete apps/admin-web/.next and restart the dev server.';
     if (isRemoteApi) {
-      return `Cannot reach the API at ${baseURL}. If using Render: wait 30–60s (cold start) then refresh, or check the Render dashboard. Ensure .env.local has NEXT_PUBLIC_API_URL=https://weyou-api.onrender.com/api.${cacheHint}`;
+      return `Cannot reach the API at ${baseURL}. Wait a moment and refresh (cold start). In Vercel/Render set NEXT_PUBLIC_API_URL to your API URL (e.g. /api for same domain, or https://your-api.vercel.app/api).${cacheHint}`;
     }
-    return `Cannot connect to the API at ${baseURL}. For local API run npm run dev:api from repo root. For Render set NEXT_PUBLIC_API_URL=https://weyou-api.onrender.com/api in apps/admin-web/.env.local.${cacheHint}`;
+    return `Cannot connect to the API at ${baseURL}. For local API run npm run dev:api from repo root. Set NEXT_PUBLIC_API_URL in apps/admin-web/.env.local (e.g. http://localhost:3003/api).${cacheHint}`;
   }
   if (api.status === 404) {
-    return 'The endpoint was not found (404). Redeploy the API on Render (weyou-api) with the latest code so routes like /api/admin/analytics/revenue are available. Use "Clear build cache & deploy" in the Render dashboard.';
+    return 'The endpoint was not found (404). Redeploy the API so routes like /api/admin/analytics/revenue are available.';
   }
   if (api.status === 401) {
     return 'Invalid email or password. Check that the user exists with role Admin/Billing/OPS and the password is correct.';

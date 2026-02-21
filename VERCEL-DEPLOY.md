@@ -4,6 +4,22 @@ You can use **one project** (Admin + API on the same domain) or **two projects**
 
 ---
 
+## Get login and full UI working (one URL)
+
+To have **one URL** where you can log in and use all admin screens (dashboard, orders, customers, etc.):
+
+1. **Use a single Vercel project** (e.g. `weyouapp-v-01-admin-web-1xhg`) with **Root Directory** = **empty**.
+2. **Do not set** the env var **`VERCEL_ADMIN_ONLY`** in this project (so the full build runs: Prisma + API + Next).
+3. **Environment variables** (Settings → Environment Variables):
+   - **`DATABASE_URL`** – your PostgreSQL connection string (e.g. Supabase).
+   - **`JWT_SECRET`** – a secret string for JWT signing.
+   - **`NEXT_PUBLIC_API_URL`** – set to **`/api`** (same origin; the admin app will call your deployment’s `/api`).
+4. **Redeploy** (Deployments → ⋯ → Redeploy).
+
+Then open **`https://your-project.vercel.app`** → you should see the login page. Sign in; the app will call `/api` on the same domain, so login and all data/UI screens work. If you had created a second “Admin-only” project, use this **one** project’s URL for daily use.
+
+---
+
 ## Option A: One project (Admin + API on same domain)
 
 **Best if:** You want a single URL like `weyouapp-v-01-admin-web-1xhg.vercel.app` for both the app and the API.
@@ -12,7 +28,7 @@ You can use **one project** (Admin + API on the same domain) or **two projects**
 2. **Root Directory:** leave **empty** (repo root). If you set it to `apps/admin-web`, the build will fail with "Missing script: prisma:generate" because that script lives in the root.
 3. **Framework Preset:** Other.
 4. The repo’s **`vercel.json`** already configures:
-   - Build: `npm run prisma:generate && npm run build:api` (then Next.js builds from `apps/admin-web`).
+   - Build: conditional (if `VERCEL_ADMIN_ONLY` is not set: Prisma + API + Next.js). Do not set `VERCEL_ADMIN_ONLY` for this project.
    - All `/api/*` requests → Nest API (serverless). Everything else → Next.js admin.
 
 **Environment variables:**
@@ -46,6 +62,12 @@ No CORS issues because both are on the same domain.
 - Import the **same** repo again.
 - **Root Directory:** `apps/admin-web`.
 - **Env:** `NEXT_PUBLIC_API_URL=https://weyou-api-xxx.vercel.app/api`.
+
+---
+
+## 404 NOT_FOUND – what it means
+
+Vercel returns **404 NOT_FOUND** when the request path does not match any resource: no static file and no serverless function at that path (and no rewrite sending the request to a function). For the **API-only** project, only paths rewritten to `/api/index` in `vercel-api-only.json` are handled (`/`, `/api`, `/api/:path*`). If you see 404, check the URL, that **Configuration File** is `vercel-api-only.json`, and that you redeployed after changing config.
 
 ---
 
@@ -83,6 +105,22 @@ In the **current** project (e.g. `weyouapp-v-01-admin-web-1xhg`): **Settings →
 
 **Step 3 – Use the new URL**  
 Open the **new** project's URL (e.g. `https://weyou-admin-xxx.vercel.app`). You should see the Admin UI. The admin app will call the API at the URL you set. CORS already allows `*.vercel.app`.
+
+### Still not working? (API-only + separate Admin)
+
+If login fails or you see “Cannot reach the API” with the two-project setup:
+
+1. **Check the API is up**  
+   Open **`https://your-api-project.vercel.app/api/health`** in a browser (use your real API project URL). You should get JSON like `{"status":"ok"}`. If you get 404 or an error, the API project is not serving correctly (confirm **Configuration File** is **`vercel-api-only.json`** and redeploy).
+
+2. **Set Admin env exactly**  
+   In the **Admin** project: **Settings → Environment Variables** set **`NEXT_PUBLIC_API_URL`** = **`https://your-api-project.vercel.app/api`** (your API project URL + `/api`, no trailing slash). No typos, and no `/api/api`.
+
+3. **Redeploy the Admin project**  
+   **`NEXT_PUBLIC_*`** is baked in at **build** time. After changing it you must **Redeploy** (Deployments → ⋯ → Redeploy) or push a new commit. Otherwise the app still uses the old URL.
+
+4. **Verify what the app is using**  
+   On the login page, after a failed request the app shows **“Using API: …”**. That value must be your API project URL (e.g. `https://weyou-api-xxx.vercel.app/api`). If it shows something else, fix the env and redeploy.
 
 ---
 
