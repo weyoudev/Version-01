@@ -35,6 +35,16 @@ In Render: **weyou-api** → **Settings** → **Build & Deploy** → set **Branc
 
 If the admin at **https://weyou-admin.onrender.com** shows "Failed to load analytics" or "Cannot connect to the API" with old text (e.g. localhost:3005), the deployed app was built **without** the correct API URL. Next.js bakes `NEXT_PUBLIC_*` into the client bundle at **build time**, so the env var must be set on Render **before** the build runs.
 
+## Build: "The module 'react' was not found"
+
+If the build fails with **Cannot find module 'react'**, the monorepo workspace install isn't being used correctly. Use:
+
+- **Root Directory:** leave **empty** (repo root), so the build runs from the repo root.
+- **Build Command:** `npm install && cd apps/admin-web && npx next build`
+- **Start Command:** `cd apps/admin-web && npx next start -p 3004`
+
+Or from repo root: **Build Command** `npm run build:admin:render` and **Start Command** `cd apps/admin-web && npx next start -p 3004`.
+
 ## Steps
 
 1. **Set the env var on Render**

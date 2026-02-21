@@ -35,6 +35,8 @@
     "reset:all": "cross-env RESET_ALL_CONFIRM=YES npx ts-node --transpile-only --project scripts/tsconfig.seed.json scripts/reset-all-data.ts",
     "smoke:test": "ts-node scripts/smoke-test.ts",
     "smoke-admin": "ts-node scripts/smoke-admin-flow.ts",
+    "build:admin": "npm run build -w admin-web",
+    "build:admin:render": "npm install && cd apps/admin-web && npx next build",
     "dev:admin": "npm run dev -w admin-web",
     "dev:customer": "npm run dev -w customer-web",
     "dev:customer-mobile": "cd apps/customer-mobile && npx expo start",
