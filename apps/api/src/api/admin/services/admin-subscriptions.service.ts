@@ -19,6 +19,7 @@ export class AdminSubscriptionsService {
 
   async listSubscriptionInvoices(filters: {
     customerId?: string;
+    branchId?: string | null;
     dateFrom?: string;
     dateTo?: string;
     limit?: number;
@@ -34,6 +35,7 @@ export class AdminSubscriptionsService {
     }
     return this.invoicesRepo.listSubscriptionInvoices({
       customerId: filters.customerId,
+      branchId: filters.branchId ?? undefined,
       dateFrom,
       dateTo,
       limit,

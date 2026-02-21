@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api, API_BASE_URL, getApiError } from '@/lib/api';
+import { api, getApiError, getApiOrigin } from '@/lib/api';
 import { setToken, setStoredUser, type AuthUser } from '@/lib/auth';
+import { usePublicBranding } from '@/hooks/useBranding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,10 +20,17 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: publicBranding } = usePublicBranding();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
+
+  const logoUrl = publicBranding?.logoUrl
+    ? publicBranding.logoUrl.startsWith('http')
+      ? publicBranding.logoUrl
+      : `${getApiOrigin()}${publicBranding.logoUrl}`
+    : null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -53,7 +61,16 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30">
       <Card className="w-full max-w-sm">
-        <CardHeader>
+        <CardHeader className="space-y-4">
+          {logoUrl && (
+            <div className="flex justify-center">
+              <img
+                src={logoUrl}
+                alt={publicBranding?.businessName ?? 'Logo'}
+                className="h-16 w-auto max-h-20 object-contain"
+              />
+            </div>
+          )}
           <CardTitle>Admin login</CardTitle>
           <CardDescription>Sign in with your admin or billing account.</CardDescription>
         </CardHeader>

@@ -126,6 +126,7 @@ export interface CreateSubscriptionInvoiceInput {
 
 export interface AdminSubscriptionInvoiceFilters {
   customerId?: string;
+  branchId?: string | null;
   dateFrom?: Date;
   dateTo?: Date;
   limit: number;

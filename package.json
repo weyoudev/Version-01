@@ -9,7 +9,9 @@
   ],
   "overrides": {
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "rimraf": "^5.0.0",
+    "eslint": "^8.57.0"
   },
   "scripts": {
     "dev:api": "npx ts-node-dev -r tsconfig-paths/register --project apps/api/tsconfig.json --respawn --transpile-only apps/api/src/bootstrap/main.ts",
@@ -53,7 +55,7 @@
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "cross-env": "^7.0.3",
-    "eslint": "^4.1.1",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^6.15.0",
     "jest": "^29.7.0",
     "prettier": "^3.0.0",

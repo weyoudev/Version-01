@@ -50,6 +50,11 @@ function getDayLabel(dateKey: string, todayKey: string): string {
   return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
+/** Subscription = has subscriptionId or orderType SUBSCRIPTION; else individual (online) booking. */
+function isSubscriptionOrder(row: AdminOrderListRow): boolean {
+  return !!(row.subscriptionId ?? (row.orderType === 'SUBSCRIPTION'));
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const user = useMemo(() => getStoredUser(), []);
@@ -262,10 +267,15 @@ export default function DashboardPage() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {rows.map((row) => (
+                            {rows.map((row) => {
+                              const isSub = isSubscriptionOrder(row);
+                              const rowBg = isSub
+                                ? 'bg-sky-50 dark:bg-sky-950/30'
+                                : 'bg-fuchsia-50 dark:bg-fuchsia-950/30';
+                              return (
                               <TableRow
                                 key={row.id}
-                                className="cursor-pointer"
+                                className={`cursor-pointer ${rowBg}`}
                                 onClick={() => router.push(`/orders/${row.id}`)}
                               >
                                 <TableCell className="font-mono text-xs">{row.id.slice(0, 8)}…</TableCell>
@@ -277,7 +287,8 @@ export default function DashboardPage() {
                                   {row.billTotalPaise != null ? formatMoney(row.billTotalPaise) : '—'}
                                 </TableCell>
                               </TableRow>
-                            ))}
+                            );
+                            })}
                           </TableBody>
                         </Table>
                       </div>
@@ -303,16 +314,22 @@ export default function DashboardPage() {
                       {isMissed && <span className="text-destructive text-xs block">Missed</span>}
                     </div>
                     <ul className="space-y-1">
-                      {rows.map((row) => (
+                      {rows.map((row) => {
+                        const isSub = isSubscriptionOrder(row);
+                        const rowBg = isSub
+                          ? 'bg-sky-50 dark:bg-sky-950/30'
+                          : 'bg-fuchsia-50 dark:bg-fuchsia-950/30';
+                        return (
                         <li
                           key={row.id}
-                          className="text-xs cursor-pointer hover:underline truncate"
+                          className={`text-xs cursor-pointer hover:underline truncate rounded px-1.5 py-0.5 ${rowBg}`}
                           onClick={() => router.push(`/orders/${row.id}`)}
-                          title={`${row.customerName ?? row.id} · ${row.timeWindow}`}
+                          title={`${row.customerName ?? row.id} · ${row.timeWindow}${isSub ? ' · Subscription' : ' · Individual'}`}
                         >
                           {row.customerName ?? row.id.slice(0, 8)} · {row.timeWindow}
                         </li>
-                      ))}
+                        );
+                      })}
                     </ul>
                   </div>
                 );

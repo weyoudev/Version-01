@@ -21,6 +21,7 @@ export interface AdminSubscriptionInvoicesResponse {
 
 export interface SubscriptionInvoicesFilters {
   customerId?: string;
+  branchId?: string | null;
   dateFrom?: string;
   dateTo?: string;
   limit?: number;
@@ -30,6 +31,7 @@ export interface SubscriptionInvoicesFilters {
 function fetchSubscriptionInvoices(filters: SubscriptionInvoicesFilters): Promise<AdminSubscriptionInvoicesResponse> {
   const params = new URLSearchParams();
   if (filters.customerId) params.set('customerId', filters.customerId);
+  if (filters.branchId != null && filters.branchId !== '') params.set('branchId', filters.branchId);
   if (filters.dateFrom) params.set('dateFrom', filters.dateFrom);
   if (filters.dateTo) params.set('dateTo', filters.dateTo);
   params.set('limit', String(filters.limit ?? 50));

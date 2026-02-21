@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getStoredUser } from '@/lib/auth';
 import { useSubscriptionInvoices, type AdminSubscriptionInvoiceRow } from '@/hooks/useSubscriptionInvoices';
+import { BranchFilter } from '@/components/shared/BranchFilter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,14 +23,28 @@ import { Badge } from '@/components/ui/badge';
 
 export default function SubscriptionsPage() {
   const router = useRouter();
+  const user = useMemo(() => getStoredUser(), []);
+  const role = user?.role ?? 'CUSTOMER';
+  const isBranchHead = role === 'OPS' && !!user?.branchId;
+  const [selectedBranchIds, setSelectedBranchIds] = useState<string[]>(() =>
+    isBranchHead && user?.branchId ? [user.branchId] : [],
+  );
   const [customerId, setCustomerId] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [cursor, setCursor] = useState<string | undefined>(undefined);
   const limit = 50;
 
+  useEffect(() => {
+    if (isBranchHead && user?.branchId) setSelectedBranchIds([user.branchId]);
+  }, [isBranchHead, user?.branchId]);
+
+  const effectiveBranchId =
+    isBranchHead ? (user?.branchId ?? undefined) : (selectedBranchIds.length === 1 ? selectedBranchIds[0] : undefined);
+
   const filters = {
     customerId: customerId.trim() || undefined,
+    branchId: effectiveBranchId ?? undefined,
     dateFrom: dateFrom || undefined,
     dateTo: dateTo || undefined,
     limit,
@@ -63,10 +79,20 @@ export default function SubscriptionsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Subscriptions</h1>
-      <p className="text-sm text-muted-foreground">
-        Subscription invoices (order ID). Confirm payment here, then you can issue the acknowledgement invoice for the first order linked to this subscription.
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Subscriptions</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Subscription invoices (order ID). Confirm payment here, then you can issue the acknowledgement invoice for the first order linked to this subscription.
+          </p>
+        </div>
+        <BranchFilter
+          selectedBranchIds={selectedBranchIds}
+          onChange={setSelectedBranchIds}
+          compactLabel
+          disabled={!!isBranchHead}
+        />
+      </div>
 
       <Card>
         <CardHeader>
@@ -74,7 +100,7 @@ export default function SubscriptionsPage() {
         </CardHeader>
         <CardContent>
           <p className="text-xs text-muted-foreground mb-3">
-            Filter by customer ID or issued date range. Leave empty for all.
+            Filter by branch, customer ID or issued date range. Leave empty for all.
           </p>
           <div className="flex flex-wrap items-end gap-4">
             <div className="space-y-1">

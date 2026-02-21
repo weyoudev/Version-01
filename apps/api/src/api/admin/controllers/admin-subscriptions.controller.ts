@@ -15,6 +15,7 @@ export class AdminSubscriptionsController {
   @Get('invoices')
   async listSubscriptionInvoices(
     @Query('customerId') customerId?: string,
+    @Query('branchId') branchId?: string,
     @Query('dateFrom') dateFrom?: string,
     @Query('dateTo') dateTo?: string,
     @Query('limit') limit?: string,
@@ -22,6 +23,7 @@ export class AdminSubscriptionsController {
   ) {
     return this.adminSubscriptionsService.listSubscriptionInvoices({
       customerId,
+      branchId: branchId ?? undefined,
       dateFrom,
       dateTo,
       limit: limit ? parseInt(limit, 10) : undefined,

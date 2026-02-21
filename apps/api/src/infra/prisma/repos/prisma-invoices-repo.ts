@@ -329,10 +329,18 @@ export class PrismaInvoicesRepo implements InvoicesRepo {
 
   async listSubscriptionInvoices(filters: AdminSubscriptionInvoiceFilters): Promise<AdminSubscriptionInvoicesResult> {
     const prisma = this.prisma as PrismaClient;
-    const where: { type: PrismaInvoiceType; subscription?: { userId: string }; issuedAt?: { gte?: Date; lte?: Date } } = {
+    const where: {
+      type: PrismaInvoiceType;
+      subscription?: { userId?: string; branchId?: string | null };
+      issuedAt?: { gte?: Date; lte?: Date };
+    } = {
       type: PrismaInvoiceType.SUBSCRIPTION,
     };
-    if (filters.customerId) where.subscription = { userId: filters.customerId };
+    if (filters.customerId || filters.branchId != null) {
+      where.subscription = {};
+      if (filters.customerId) where.subscription.userId = filters.customerId;
+      if (filters.branchId != null) where.subscription.branchId = filters.branchId;
+    }
     if (filters.dateFrom && filters.dateTo) {
       where.issuedAt = { gte: filters.dateFrom, lte: filters.dateTo };
     } else if (filters.dateFrom) {

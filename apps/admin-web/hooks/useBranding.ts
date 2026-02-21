@@ -2,6 +2,26 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import type { BrandingSettings, UpdateBrandingBody } from '@/types';
 
+/** Public branding (logo, business name, welcome background). No auth. Use on login/welcome screens. */
+export interface PublicBranding {
+  businessName: string | null;
+  logoUrl: string | null;
+  termsAndConditions: string | null;
+  privacyPolicy: string | null;
+  welcomeBackgroundUrl: string | null;
+}
+
+function fetchPublicBranding(): Promise<PublicBranding> {
+  return api.get<PublicBranding>('/branding/public').then((r) => r.data);
+}
+
+export function usePublicBranding() {
+  return useQuery({
+    queryKey: ['public', 'branding'],
+    queryFn: fetchPublicBranding,
+  });
+}
+
 function fetchBranding(): Promise<BrandingSettings> {
   return api.get<BrandingSettings>('/admin/branding').then((r) => r.data);
 }
