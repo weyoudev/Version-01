@@ -27,11 +27,21 @@ If the admin shows **"The endpoint was not found (404)"** for analytics, follow 
 
 ## 4. Test the API
 
-- Open **https://weyou-api.onrender.com/api** → you should see JSON (`"message":"Weyou API",...`).
-- Open **https://weyou-api.onrender.com/api/admin/analytics/_ping** (no auth):
-  - **200** with `{"ok":true,"message":"analytics routes available"}` = **new code is live.** Then check the admin dashboard; analytics should work.
-  - **404** = deploy is still serving old code; re-check branch and use **Clear build cache & deploy** again.
-- Optional: **https://weyou-api.onrender.com/api/admin/analytics/dashboard-kpis** (no auth) → **401** = route exists; **404** = route missing.
+Test in this order:
+
+1. **https://weyou-api.onrender.com/api**  
+   - **200** with `"message":"Weyou API"` → our app is running.  
+   - **404** → wrong service, or deploy failed; check Render **weyou-api** deploy logs and URL.
+
+2. **https://weyou-api.onrender.com/api/health** (no auth)  
+   - **200** with `{"ok":true,"service":"weyou-api","analytics":true}` → **latest code is live.**  
+   - **404** → deploy is still old; do **Clear build cache & deploy** again and confirm the deploy used the latest commit.
+
+3. **https://weyou-api.onrender.com/api/admin/analytics/_ping** (no auth)  
+   - **200** with `{"ok":true,"message":"analytics routes available"}` → analytics routes are available.  
+   - **404** → same as above; redeploy with cleared cache.
+
+4. Optional: **https://weyou-api.onrender.com/api/admin/analytics/dashboard-kpis** (no auth) → **401** = route exists; **404** = route missing.
 
 ## 5. Reload the admin
 

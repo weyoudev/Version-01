@@ -53,64 +53,75 @@ async function bootstrap() {
   adapter.get('/api', (_req: unknown, res: { status: (n: number) => { json: (o: object) => void } }) => {
     res.status(200).json(rootPayload);
   });
+  // Health check: confirms latest bootstrap is deployed (no auth)
+  adapter.get('/api/health', (_req: unknown, res: { status: (n: number) => { json: (o: object) => void } }) => {
+    res.status(200).json({ ok: true, service: 'weyou-api', analytics: true });
+  });
 
   // Diagnostic: proves the deployed image has this code (no auth)
   adapter.get('/api/admin/analytics/_ping', (_req: unknown, res: { status: (n: number) => { json: (o: object) => void } }) => {
     res.status(200).json({ ok: true, message: 'analytics routes available' });
   });
 
-  // Fallback analytics routes (always registered so they work even if Nest controller is not); require ADMIN/BILLING
-  try {
-    const adminAnalyticsService = app.get(AdminAnalyticsService);
-    const secret = process.env.JWT_SECRET || 'dev-secret';
+  // Fallback analytics routes: always registered (no 404); resolve service per-request so route exists even if module loads late
+  const secret = process.env.JWT_SECRET || 'dev-secret';
+  const checkAuth = (req: { headers?: { authorization?: string } }): { ok: true } | { ok: false; status: number; body: object } => {
+    const auth = req.headers?.authorization;
+    if (!auth || !auth.startsWith('Bearer ')) return { ok: false, status: 401, body: { error: { message: 'Missing Authorization header' } } };
+    try {
+      const payload = jwt.verify(auth.slice(7), secret) as { role: string };
+      if (payload.role !== 'ADMIN' && payload.role !== 'BILLING') return { ok: false, status: 403, body: { error: { message: 'Forbidden' } } };
+      return { ok: true };
+    } catch {
+      return { ok: false, status: 401, body: { error: { message: 'Invalid or expired token' } } };
+    }
+  };
 
-    const checkAuth = (req: { headers?: { authorization?: string } }): { ok: true } | { ok: false; status: number; body: object } => {
-      const auth = req.headers?.authorization;
-      if (!auth || !auth.startsWith('Bearer ')) return { ok: false, status: 401, body: { error: { message: 'Missing Authorization header' } } };
-      try {
-        const payload = jwt.verify(auth.slice(7), secret) as { role: string };
-        if (payload.role !== 'ADMIN' && payload.role !== 'BILLING') return { ok: false, status: 403, body: { error: { message: 'Forbidden' } } };
-        return { ok: true };
-      } catch {
-        return { ok: false, status: 401, body: { error: { message: 'Invalid or expired token' } } };
-      }
-    };
+  adapter.get('/api/admin/analytics/dashboard-kpis', async (req: unknown, res: { status: (n: number) => { json: (o: object) => void } }) => {
+    const auth = checkAuth(req as { headers?: { authorization?: string } });
+    if (!auth.ok) {
+      res.status(auth.status).json(auth.body);
+      return;
+    }
+    let service: AdminAnalyticsService;
+    try {
+      service = app.get(AdminAnalyticsService);
+    } catch {
+      res.status(503).json({ error: { message: 'Analytics service temporarily unavailable' } });
+      return;
+    }
+    try {
+      const data = await service.getDashboardKpis();
+      res.status(200).json(data);
+    } catch (e) {
+      res.status(500).json({ error: { message: String(e) } });
+    }
+  });
 
-    adapter.get('/api/admin/analytics/dashboard-kpis', async (req: unknown, res: { status: (n: number) => { json: (o: object) => void } }) => {
-      const auth = checkAuth(req as { headers?: { authorization?: string } });
-      if (!auth.ok) {
-        res.status(auth.status).json(auth.body);
-        return;
-      }
-      try {
-        const data = await adminAnalyticsService.getDashboardKpis();
-        res.status(200).json(data);
-      } catch (e) {
-        res.status(500).json({ error: { message: String(e) } });
-      }
-    });
-
-    adapter.get('/api/admin/analytics/revenue', async (req: { query?: Record<string, unknown> } & unknown, res: { status: (n: number) => { json: (o: object) => void } }) => {
-      const auth = checkAuth(req as { headers?: { authorization?: string } });
-      if (!auth.ok) {
-        res.status(auth.status).json(auth.body);
-        return;
-      }
-      try {
-        const q = (req as { query?: Record<string, unknown> }).query ?? {};
-        const preset = (q.preset as string) && REVENUE_PRESETS.includes(q.preset as RevenuePreset) ? (q.preset as RevenuePreset) : undefined;
-        const dateFrom = q.dateFrom ? new Date(q.dateFrom as string) : undefined;
-        const dateTo = q.dateTo ? new Date(q.dateTo as string) : undefined;
-        const data = await adminAnalyticsService.getRevenue({ preset, dateFrom, dateTo });
-        res.status(200).json(data);
-      } catch (e) {
-        res.status(500).json({ error: { message: String(e) } });
-      }
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.warn('Analytics fallback routes not registered (AdminAnalyticsService unavailable):', (e as Error).message);
-  }
+  adapter.get('/api/admin/analytics/revenue', async (req: { query?: Record<string, unknown> } & unknown, res: { status: (n: number) => { json: (o: object) => void } }) => {
+    const auth = checkAuth(req as { headers?: { authorization?: string } });
+    if (!auth.ok) {
+      res.status(auth.status).json(auth.body);
+      return;
+    }
+    let service: AdminAnalyticsService;
+    try {
+      service = app.get(AdminAnalyticsService);
+    } catch {
+      res.status(503).json({ error: { message: 'Analytics service temporarily unavailable' } });
+      return;
+    }
+    try {
+      const q = (req as { query?: Record<string, unknown> }).query ?? {};
+      const preset = (q.preset as string) && REVENUE_PRESETS.includes(q.preset as RevenuePreset) ? (q.preset as RevenuePreset) : undefined;
+      const dateFrom = q.dateFrom ? new Date(q.dateFrom as string) : undefined;
+      const dateTo = q.dateTo ? new Date(q.dateTo as string) : undefined;
+      const data = await service.getRevenue({ preset, dateFrom, dateTo });
+      res.status(200).json(data);
+    } catch (e) {
+      res.status(500).json({ error: { message: String(e) } });
+    }
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({

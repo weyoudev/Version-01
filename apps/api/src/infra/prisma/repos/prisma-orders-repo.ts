@@ -1,9 +1,9 @@
+import type { PrismaClient } from '@prisma/client';
 import {
-  type PrismaClient,
   OrderStatus as PrismaOrderStatus,
   PaymentStatus as PrismaPaymentStatus,
   InvoiceType as PrismaInvoiceType,
-} from '@prisma/client';
+} from '../../generated/prisma-client';
 import type {
   CreateOrderInput,
   OrderRecord,
