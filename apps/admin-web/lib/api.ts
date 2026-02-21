@@ -4,10 +4,12 @@ import { getToken } from './auth';
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003/api';
 
-/** When admin is deployed on Render, use same-origin proxy to avoid CORS/network errors. */
+/** Same-origin or proxy when admin and API share a domain (Vercel one-project, or Render proxy). */
 export function getBaseURL(): string {
   if (typeof window === 'undefined') return API_BASE_URL;
-  // Force proxy via env (set on Render admin service)
+  // Relative /api = same origin (e.g. Vercel single project: admin + API on one domain)
+  if (API_BASE_URL === '/api' || API_BASE_URL.startsWith('/api/')) return '/api';
+  // Force proxy via env (e.g. Render admin service)
   if (process.env.NEXT_PUBLIC_USE_API_PROXY === 'true') return '/api-proxy';
   // Use proxy when this app is on Render and the API URL is also on Render
   const onRender = window.location.hostname.endsWith('.onrender.com');
@@ -18,6 +20,8 @@ export function getBaseURL(): string {
 
 /** Origin of the API server (e.g. http://localhost:3003) for building absolute URLs like PDF links. */
 export function getApiOrigin(): string {
+  if (typeof window !== 'undefined' && (API_BASE_URL === '/api' || API_BASE_URL.startsWith('/api/')))
+    return window.location.origin;
   const u = API_BASE_URL.replace(/\/api\/?$/, '');
   return u || 'http://localhost:3003';
 }
